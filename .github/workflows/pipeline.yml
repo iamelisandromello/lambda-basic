@@ -48,6 +48,15 @@ jobs:
         run: terraform init
         working-directory: terraform
 
+      # Importar a função Lambda existente (caso ela já exista)
+      - name: Import existing Lambda function
+        run: |
+          terraform import aws_lambda_function.my_lambda_function arn:aws:lambda:us-east-1:${{ secrets.AWS_ACCOUNT_ID }}:function:my_lambda_function || echo "Lambda already managed"
+        working-directory: terraform
+        env:
+          AWS_ACCESS_KEY_ID: ${{ secrets.AWS_ACCESS_KEY_ID }}
+          AWS_SECRET_ACCESS_KEY: ${{ secrets.AWS_SECRET_ACCESS_KEY }}
+
       # Aplicar Terraform (somente até o bucket ser criado)
       - name: Terraform Apply (S3 Bucket)
         run: terraform apply -target=aws_s3_bucket.lambda_code_bucket -auto-approve
@@ -63,6 +72,14 @@ jobs:
           BUCKET_NAME=$(terraform output -raw bucket_name)
           echo "bucket_name=$BUCKET_NAME" >> $GITHUB_ENV
         working-directory: terraform
+
+      # Obter o nome da função Lambda gerado pelo Terraform
+      - name: Get Lambda Function Name
+        id: get_lambda_function_name
+        run: |
+          LAMBDA_FUNCTION_NAME=$(terraform output -raw lambda_function_name)
+          echo "lambda_function_name=$LAMBDA_FUNCTION_NAME" >> $GITHUB_ENV
+        working-directory: terraform      
 
       # Upload do arquivo ZIP para o S3
       - name: Upload Lambda ZIP to S3

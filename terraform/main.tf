@@ -27,6 +27,10 @@ resource "random_id" "lambda_log_group_suffix" {
   byte_length = 8
 }
 
+resource "random_id" "lambda_suffix" {
+  byte_length = 4
+}
+
 resource "aws_s3_bucket" "lambda_code_bucket" {
   bucket = "meu-unico-bucket-s3-${random_id.bucket_suffix.hex}"
 }
@@ -48,11 +52,11 @@ resource "aws_iam_role" "lambda_execution_role" {
 }
 
 resource "aws_lambda_function" "my_lambda_function" {
-  function_name = "my_lambda_function"
+  function_name = "my_lambda_function-${random_id.lambda_suffix.hex}"
   s3_bucket     = aws_s3_bucket.lambda_code_bucket.bucket
   s3_key        = "lambda.zip"
   handler       = "index.handler"
-  runtime       = "nodejs18.x"
+  runtime       = "nodejs20.x"
   role          = aws_iam_role.lambda_execution_role.arn
 }
 
