@@ -4,7 +4,7 @@ provider "aws" {
 
 # Criação do Bucket S3 onde o código será armazenado
 resource "aws_s3_bucket" "lambda_code_bucket" {
-  bucket = "meu-bucket-s3"  # Nome do seu bucket S3
+  bucket = "lambda-basic-bucket-s3"  # Nome do seu bucket S3
 }
 
 # Role para a Lambda
