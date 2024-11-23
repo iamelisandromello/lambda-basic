@@ -2,11 +2,11 @@ terraform {
   required_providers {
     aws = {
       source  = "hashicorp/aws"
-      version = "~> 4.0"  # Defina a versão que você deseja utilizar
+      version = "~> 4.0"
     }
     random = {
       source  = "hashicorp/random"
-      version = "~> 3.0"  # Defina a versão que você deseja utilizar
+      version = "~> 3.0"
     }
   }
 }
@@ -15,35 +15,30 @@ provider "aws" {
   region = "us-east-1"
 }
 
-# Geração de ID aleatório para garantir nome único do bucket
 resource "random_id" "bucket_suffix" {
   byte_length = 8
 }
 
-# Geração de ID aleatório para garantir nome único da role
 resource "random_id" "lambda_role_suffix" {
   byte_length = 8
 }
 
-# Geração de ID aleatório para garantir nome único do log group
 resource "random_id" "lambda_log_group_suffix" {
   byte_length = 8
 }
 
-# Criação do Bucket S3 onde o código será armazenado
 resource "aws_s3_bucket" "lambda_code_bucket" {
   bucket = "meu-unico-bucket-s3-${random_id.bucket_suffix.hex}"
 }
 
-# Role para a Lambda
 resource "aws_iam_role" "lambda_execution_role" {
-  name               = "lambda_execution_role_v2-${random_id.lambda_role_suffix.hex}"
+  name = "lambda_execution_role_v2-${random_id.lambda_role_suffix.hex}"
   assume_role_policy = jsonencode({
     Version = "2012-10-17"
     Statement = [
       {
-        Action    = "sts:AssumeRole"
-        Effect    = "Allow"
+        Action = "sts:AssumeRole"
+        Effect = "Allow"
         Principal = {
           Service = "lambda.amazonaws.com"
         }
@@ -52,22 +47,19 @@ resource "aws_iam_role" "lambda_execution_role" {
   })
 }
 
-# Função Lambda
 resource "aws_lambda_function" "my_lambda_function" {
   function_name = "my_lambda_function"
   s3_bucket     = aws_s3_bucket.lambda_code_bucket.bucket
-  s3_key        = "path/to/lambda.zip"
+  s3_key        = "lambda.zip"  # Altere para corresponder ao que foi carregado
   handler       = "index.handler"
   runtime       = "nodejs16.x"
   role          = aws_iam_role.lambda_execution_role.arn
 }
 
-# CloudWatch Log Group
 resource "aws_cloudwatch_log_group" "lambda_log_group" {
   name = "/aws/lambda/my_lambda_function-${random_id.lambda_log_group_suffix.hex}"
 }
 
-# Output do nome do bucket
 output "bucket_name" {
   value = aws_s3_bucket.lambda_code_bucket.bucket
 }
