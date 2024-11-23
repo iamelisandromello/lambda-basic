@@ -4,12 +4,12 @@ provider "aws" {
 
 # Criação do Bucket S3 onde o código será armazenado
 resource "aws_s3_bucket" "lambda_code_bucket" {
-  bucket = "lambda-basic-bucket-s3"  # Nome do seu bucket S3
+  bucket = "meu-unico-bucket-s3-12345"  # Novo nome exclusivo para o bucket
 }
 
 # Role para a Lambda
 resource "aws_iam_role" "lambda_execution_role" {
-  name               = "lambda_execution_role"
+  name               = "lambda_execution_role_v2"  # Novo nome para a role
   assume_role_policy = jsonencode({
     Version = "2012-10-17"
     Statement = [
