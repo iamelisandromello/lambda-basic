@@ -63,4 +63,5 @@ jobs:
       # Upload do arquivo ZIP para o S3
       - name: Upload Lambda ZIP to S3
         run: |
+          # Usando o nome do bucket obtido pelo Terraform
           aws s3 cp lambda.zip s3://${{ steps.get_bucket_name.outputs.bucket_name }}/path/to/lambda.zip
