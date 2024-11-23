@@ -10,15 +10,15 @@ jobs:
     runs-on: ubuntu-latest
 
     steps:
-    # Checkout do código
+    # Checkout do código (versão mais recente do Node.js 20)
     - name: Checkout code
       uses: actions/checkout@v3
 
-    # Configurar Node.js
+    # Configurar Node.js (use a versão Node.js 20 diretamente)
     - name: Setup Node.js
       uses: actions/setup-node@v3
       with:
-        node-version: 18
+        node-version: 20
 
     # Instalar dependências
     - name: Install dependencies
@@ -30,7 +30,7 @@ jobs:
         zip -r build.zip .
         mv build.zip terraform/
 
-    # Configurar Terraform
+    # Configurar Terraform (versão mais recente do Node.js 20)
     - name: Setup Terraform
       uses: hashicorp/setup-terraform@v2
       with:
