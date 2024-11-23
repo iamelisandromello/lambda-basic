@@ -2,9 +2,14 @@ provider "aws" {
   region = "us-east-1"  # Ou qualquer região desejada
 }
 
+# Geração de ID aleatório para garantir nome único do bucket
+resource "random_id" "bucket_suffix" {
+  byte_length = 8
+}
+
 # Criação do Bucket S3 onde o código será armazenado
 resource "aws_s3_bucket" "lambda_code_bucket" {
-  bucket = "meu-unico-bucket-s3-12345"  # Novo nome exclusivo para o bucket
+  bucket = "meu-unico-bucket-s3-${random_id.bucket_suffix.hex}"  # Nome único para o bucket
 }
 
 # Role para a Lambda
@@ -40,5 +45,5 @@ resource "aws_lambda_function" "my_lambda_function" {
 
 # Política de logs para a Lambda
 resource "aws_cloudwatch_log_group" "lambda_log_group" {
-  name = "/aws/lambda/my_lambda_function"
+  name = "/aws/lambda/my_lambda_function"  # Nome do Log Group (use o mesmo nome da função)
 }
