@@ -57,3 +57,12 @@ resource "aws_lambda_function" "my_lambda_function" {
 resource "aws_cloudwatch_log_group" "lambda_log_group" {
   name = "/aws/lambda/my_lambda_function-${random_id.lambda_log_group_suffix.hex}"  # Nome único para o log group
 }
+
+# Output para o nome do bucket
+output "bucket_name" {
+  value = aws_s3_bucket.lambda_code_bucket.bucket
+}
+
+output "lambda_arn" {
+  value = aws_lambda_function.my_lambda_function.arn
+}
