@@ -28,10 +28,12 @@ jobs:
       - name: Create Lambda ZIP
         run: |
           zip -r lambda.zip .
-          # Se você for usar o S3:
-          aws s3 cp lambda.zip s3://lambda-basic-bucket-s3/path/to/lambda.zip
-          # Se for usar o upload direto:
-          aws lambda update-function-code --function-name my_lambda_function --zip-file fileb://lambda.zip
+          # Configurar as credenciais da AWS para o AWS CLI
+          aws configure set aws_access_key_id ${{ secrets.AWS_ACCESS_KEY_ID }}
+          aws configure set aws_secret_access_key ${{ secrets.AWS_SECRET_ACCESS_KEY }}
+          aws configure set default.region us-east-1  # Ajuste a região conforme necessário
+          # Upload para o S3
+          aws s3 cp lambda.zip s3://meu-bucket-s3/path/to/lambda.zip
 
       # Configurar Terraform
       - name: Setup Terraform
