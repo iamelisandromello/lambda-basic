@@ -12,7 +12,7 @@ terraform {
 }
 
 provider "aws" {
-  region = "us-east-1"
+  region = var.region
 }
 
 resource "random_id" "bucket_suffix" {
@@ -50,9 +50,9 @@ resource "aws_iam_role" "lambda_execution_role" {
 resource "aws_lambda_function" "my_lambda_function" {
   function_name = "my_lambda_function"
   s3_bucket     = aws_s3_bucket.lambda_code_bucket.bucket
-  s3_key        = "lambda.zip"  # Altere para corresponder ao que foi carregado
+  s3_key        = "lambda.zip"
   handler       = "index.handler"
-  runtime       = "nodejs16.x"
+  runtime       = "nodejs20.x"
   role          = aws_iam_role.lambda_execution_role.arn
 }
 

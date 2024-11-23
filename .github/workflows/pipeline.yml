@@ -48,7 +48,15 @@ jobs:
         run: terraform init
         working-directory: terraform
 
-      # Obter o nome do bucket gerado pelo Terraform sem aplicar
+      # Aplicar Terraform (criação de recursos na AWS)
+      - name: Terraform Apply
+        run: terraform apply -auto-approve
+        working-directory: terraform
+        env:
+          AWS_ACCESS_KEY_ID: ${{ secrets.AWS_ACCESS_KEY_ID }}
+          AWS_SECRET_ACCESS_KEY: ${{ secrets.AWS_SECRET_ACCESS_KEY }}
+
+      # Obter o nome do bucket gerado pelo Terraform
       - name: Get Bucket Name from Terraform
         id: get_bucket_name
         run: |
@@ -59,12 +67,4 @@ jobs:
       # Upload do arquivo ZIP para o S3
       - name: Upload Lambda ZIP to S3
         run: |
-          aws s3 cp lambda.zip s3://${BUCKET_NAME}/lambda.zip
-
-      # Aplicar Terraform (criação de recursos na AWS)
-      - name: Terraform Apply
-        run: terraform apply -auto-approve
-        working-directory: terraform
-        env:
-          AWS_ACCESS_KEY_ID: ${{ secrets.AWS_ACCESS_KEY_ID }}
-          AWS_SECRET_ACCESS_KEY: ${{ secrets.AWS_SECRET_ACCESS_KEY }}
+          aws s3 cp lambda.zip s3://${{ env.bucket_name }}/lambda.zip
