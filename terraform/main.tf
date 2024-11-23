@@ -7,6 +7,16 @@ resource "random_id" "bucket_suffix" {
   byte_length = 8
 }
 
+# Geração de ID aleatório para garantir nome único da role
+resource "random_id" "lambda_role_suffix" {
+  byte_length = 8
+}
+
+# Geração de ID aleatório para garantir nome único do log group
+resource "random_id" "lambda_log_group_suffix" {
+  byte_length = 8
+}
+
 # Criação do Bucket S3 onde o código será armazenado
 resource "aws_s3_bucket" "lambda_code_bucket" {
   bucket = "meu-unico-bucket-s3-${random_id.bucket_suffix.hex}"  # Nome único para o bucket
@@ -14,7 +24,7 @@ resource "aws_s3_bucket" "lambda_code_bucket" {
 
 # Role para a Lambda
 resource "aws_iam_role" "lambda_execution_role" {
-  name               = "lambda_execution_role_v2"  # Novo nome para a role
+  name               = "lambda_execution_role_v2-${random_id.lambda_role_suffix.hex}"  # Nome único para a role
   assume_role_policy = jsonencode({
     Version = "2012-10-17"
     Statement = [
@@ -45,5 +55,5 @@ resource "aws_lambda_function" "my_lambda_function" {
 
 # Política de logs para a Lambda
 resource "aws_cloudwatch_log_group" "lambda_log_group" {
-  name = "/aws/lambda/my_lambda_function"  # Nome do Log Group (use o mesmo nome da função)
+  name = "/aws/lambda/my_lambda_function-${random_id.lambda_log_group_suffix.hex}"  # Nome único para o log group
 }
