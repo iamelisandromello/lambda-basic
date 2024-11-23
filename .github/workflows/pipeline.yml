@@ -32,8 +32,6 @@
             aws configure set aws_access_key_id ${{ secrets.AWS_ACCESS_KEY_ID }}
             aws configure set aws_secret_access_key ${{ secrets.AWS_SECRET_ACCESS_KEY }}
             aws configure set default.region us-east-1  # Ajuste a região conforme necessário
-            # Substitua pelo nome correto do bucket gerado dinamicamente
-            aws s3 cp lambda.zip s3://meu-unico-bucket-s3-${{ steps.bucket_suffix.outputs.hex }}/path/to/lambda.zip
 
         # Obter o valor do random_id do bucket gerado
         - name: Get Bucket Suffix
@@ -46,11 +44,6 @@
           with:
             terraform_version: 1.5.6
 
-        # Inicializar Terraform
-        - name: Terraform Init
-          run: terraform init
-          working-directory: terraform
-
         # Aplicar Terraform (criação de recursos na AWS)
         - name: Terraform Apply
           run: terraform apply -auto-approve
@@ -58,3 +51,16 @@
           env:
             AWS_ACCESS_KEY_ID: ${{ secrets.AWS_ACCESS_KEY_ID }}
             AWS_SECRET_ACCESS_KEY: ${{ secrets.AWS_SECRET_ACCESS_KEY }}
+
+        # Obter o nome do bucket gerado pelo Terraform
+        - name: Get Bucket Name
+          id: get_bucket_name
+          run: |
+            BUCKET_NAME=$(terraform output -raw bucket_name)
+            echo "Bucket name is $BUCKET_NAME"
+            echo "::set-output name=bucket_name::$BUCKET_NAME"
+
+        # Upload do arquivo ZIP para o S3
+        - name: Upload Lambda ZIP to S3
+          run: |
+            aws s3 cp lambda.zip s3://${{ steps.get_bucket_name.outputs.bucket_name }}/path/to/lambda.zip
