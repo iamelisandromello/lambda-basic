@@ -55,7 +55,7 @@ resource "aws_lambda_function" "my_lambda_function" {
   function_name = "my_lambda_function-${random_id.lambda_suffix.hex}"
   s3_bucket     = aws_s3_bucket.lambda_code_bucket.bucket
   s3_key        = "lambda.zip"
-  handler       = "index.handler"
+  handler       = "src/index.handler"
   runtime       = "nodejs18.x"
   role          = aws_iam_role.lambda_execution_role.arn
 }
