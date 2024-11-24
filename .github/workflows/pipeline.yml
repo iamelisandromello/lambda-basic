@@ -25,7 +25,7 @@ jobs:
 
       # Criar o arquivo ZIP para Lambda
       - name: Create Lambda ZIP
-        run: zip -r lambda.zip .
+        run: zip -r lambda.zip src
 
       # Configurar as credenciais da AWS para o AWS CLI
       - name: Configure AWS credentials
@@ -93,4 +93,3 @@ jobs:
           LAMBDA_FUNCTION_NAME=$(terraform output -raw lambda_function_name)
           echo "lambda_function_name=$LAMBDA_FUNCTION_NAME" >> $GITHUB_ENV
         working-directory: terraform
-          
